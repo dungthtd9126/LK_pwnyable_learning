@@ -53,9 +53,7 @@ KASLR: address space layout randomization (ASLR) like user-space
 
 If you can leak the address of a function or data in linux kernel, you're supposed to have base address
 
-FGKASLR: Stronger ASLR than normal one, randomize function address
-
-You can't get base address by leaking function address but you can get base by leak address of data section since it doesn't randomize that map
+FGKASLR: Stronger ASLR than normal one, randomize function address. You can't get base address by leaking function address but you can get base by leak address of data section since it doesn't randomize that map
 
 KASLR can be disabled as a kernel boot argument
 ```c
@@ -66,6 +64,7 @@ KASLR can be disabled as a kernel boot argument
 KPTI is a security mechanism solely for preventing Meltdown, so it doesn't pose a problem in normal kernel exploits. However, if KPTI is enabled when performing ROP in kernel space, problems will occur when returning to user space at the end
 
 KPTI is a page table switch, so you can switch between user and kernel space by manipulating the CR3 register. In Linux, you can switch from kernel space to user space by ORing CR3 with 0x1000 (i.e., changing the PDBR)
+
 ### KADR (Kernel Address Display Restriction) 
 The value of this ``/proc/sys/kernel/kptr_restrict`` results in the address display restrictions
 
@@ -271,7 +270,7 @@ movq	PER_CPU_VAR(cpu_tss_rw + TSS_sp0), %rsp
 UNWIND_HINT_EMPTY
 ```
 
-Since it's built using (rdi is the original rsp), you need to place the data used by swapgs 0x10 bytes away from the gadget call. 
+Since it's built using (rdi is the original rsp), you need to place the data used by `iretq` 0x10 bytes away from the `iretq` call. 
 
 ```c
 *chain++ = bypass_kpti;
