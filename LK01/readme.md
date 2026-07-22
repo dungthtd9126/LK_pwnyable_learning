@@ -315,9 +315,11 @@ With `MEP` enabled, I can't execute direct shellcode in userspace so I will use 
 
 The next mitigation is KPTI, this will block me when I try to switch from kernel and userland. The reason is it has a register named `CR3`, this will define whether I'm in `user page` or `kernel page`. Therefore, I have to xor `CR3` first in `kernel land`
 
-There are 2 ways to do this
+`There are 2 ways to do this`
 
 #### swapgs_restore_regs_and_return_to_usermode
+See my script [here](./src/exploit.c)
+
 use `swapgs_restore_regs_and_return_to_usermode` function. This is a function called when kernel switch from `ring 0 (kernel land)` to `ring 3 (userland)`:
 ```c
 pwndbg> x/50i 0xffffffff81800e26
@@ -374,6 +376,8 @@ rsp ->  User RIP
 04:0020│     0xfffffe0000002ff8 ◂— 0x2b /* '+' */
 ```
 #### handler_signal
+[My script](./src/handler_exploit.c)
+
 There is another way to exploit this thanks to [kase's write up](https://github.com/5o1z/notes/tree/main/LKE/LK01/HolsteinV1#return-to-userspace) `signal_handler`. I can just call `swapgs` and `iretq` directly and it will trigger the `signal handler` which I set up and called it before calling `write`
 ```c
 struct sigaction sigact;
